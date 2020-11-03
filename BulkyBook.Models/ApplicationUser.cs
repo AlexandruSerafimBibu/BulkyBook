@@ -20,6 +20,6 @@ namespace BulkyBook.Models
 
         public Company Company { get; set; }
 
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
     }
 }

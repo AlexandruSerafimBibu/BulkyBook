@@ -14,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using BulkyBook.DataAccess.Data;
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.DataAccess.Repository;
+using BulkyBook.Utilities;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace BulkyBook
 {
@@ -32,12 +34,20 @@ namespace BulkyBook
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddSingleton<IEmailSender, EmailSender>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews()
-                .AddRazorRuntimeCompilation();
+                .AddRazorRuntimeCompilation(); 
             services.AddRazorPages();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = $"/Identity/Account/Login";
+                options.LogoutPath = $"/Identity/Account/Logout";
+                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
